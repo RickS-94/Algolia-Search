@@ -1,7 +1,6 @@
-title: SUF Header 2
-description: This is one of the free modules that you can use among other Startup-Framework ( SUF ) modules. The framework allows marketers, designers and developers to create HubSpot pages and websites quickly and easily.
-categories: Menus and navigation
-demo_url: http://sqmedia-2660151.hs-sites.com/demo-suf-header-2-codegallery
+title: SUF Algolia Search
+description: It s a new search module which allows you to leverage the powerful Algolia search in HubSpot.
+categories: Search, Settings, Navigation
+demo_url: https://w.inboundlabs.co/algolia-search-suf-demo
 video_url: 
 hubspot_url: https://w.inboundlabs.co/startup-framework
-
