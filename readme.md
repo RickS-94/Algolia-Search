@@ -32,7 +32,7 @@ FYI: You will need to setup a free Algolia account to use the search module.
 
 3. Paste API code into HubSpot module text field "Your Algolia Key"
 
-4. If you switch on "Use custom search button outside the module" the search box is only visible and triggered if the visitor clicks on an element that is tagged with <a href=#show-search>
+4. If you switch on "Use custom search button outside the module" the search box is only visible and triggered if the visitor clicks on an element that is tagged with \<a href=#show-search>
 
 ---
 
