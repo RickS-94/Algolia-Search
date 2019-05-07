@@ -1,0 +1,333 @@
+
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Algolia Search</title>
+        <meta name="description" content="Algolia Search">
+        <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js" integrity="sha384-kW+oWsYx3YpxvjtZjFXqazFpA7UP/MbiY4jvs+RWZo2+N94PFZ36T6TFkc9O3qoB" crossorigin="anonymous"></script>
+      	<base target="_parent">
+
+      	<style>
+          body {
+          	height: auto;
+
+          }
+
+          a:hover, a:focus, a:active {
+            text-decoration: none;
+          }
+          
+          .search-wrapper {
+          	max-width: 720px;
+            margin: 0 auto;
+          }
+          
+          .search-loader {
+            border: 4px solid #ffd0cb;
+            border-radius: 50%;
+            border-top: 4px solid #d2322d;
+            width: 30px;
+            height: 30px;
+            margin: 25px auto;
+            -webkit-animation: spin 2s linear infinite; /* Safari */
+            animation: spin 2s linear infinite;
+          }
+
+          /* Safari */
+          @-webkit-keyframes spin {
+            0% { -webkit-transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); }
+          }
+
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+          
+          .search-container {
+          	position: relative;
+          }
+          
+          .search-container .fa-search {
+          	position: absolute;
+            top: 18px;
+            left: 24px;
+            font-size: 26px;
+            color: #BEC0CA;
+          }
+          
+          .search-container .btn {
+          	position: absolute;
+            top: 8px;
+            right: 10px;
+            min-width: 160px;
+            padding: 13px 30px;
+          }
+          
+          .search-container input:not([type=submit]):not([type=file]):not([type=checkbox]):not([type=radio]), .uneditable-input {
+            display: block;
+            width: 100%;
+            height: 65px;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            padding-left: 77px;
+            padding-right: 15px;
+            border: 1px solid #BEC0CA;
+            border-radius: 0;
+            background-color: #fff;
+            -webkit-appearance: none;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+            -webkit-transition: border .25s linear, color .25s linear, background-color .25s linear;
+            transition: border .25s linear, color .25s linear, background-color .25s linear;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 19px;
+            color: #BEC0CA;
+            line-height: 1.467;
+          }
+          
+          .search-container input[type="search"]::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+            color: #BEC0CA;
+          }
+          .search-container input[type="search"]::-moz-placeholder { /* Firefox 19+ */
+            color: #BEC0CA;
+          }
+          .search-container input[type="search"]:-ms-input-placeholder { /* IE 10+ */
+            color: #BEC0CA;
+          }
+          .search-container input[type="search"]:-moz-placeholder { /* Firefox 18- */
+            color: #BEC0CA;
+          }
+          
+          .search-input {
+            transition: width 0.125s;
+          	width: 100%;
+            overflow: hidden;
+          }
+          
+          .search-result .search-result-inner {
+            max-height: 390px;
+            overflow-y: auto;
+            margin-top: -1px;
+            border-left: 1px solid #BEC0CA;
+            border-right: 1px solid #BEC0CA;
+            border-bottom: 1px solid #BEC0CA;
+            text-align: center;
+          }
+          
+          .search-result-list {
+          	text-align: left;
+          }
+          
+          .search-result-list .post-item {
+            padding: 20px 25px;
+            border-bottom: 1px solid #BEC0CA;
+          }
+          
+          .search-result-list .post-item .post-header {
+            font-size: 14px;
+            line-height: 20px;
+          }
+          
+          .search-result-list .post-item a {
+          	color: #000000;
+          }
+          
+          .search-result-list .post-item h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+          	font-size: 18px;
+          }
+          
+          .search-result-list .post-item .post-content-text {
+          	color: #7f8c8d;
+          }
+          
+          .search-result-list .post-author {
+            font-size: 13px;
+            margin-top: 11px;
+          }
+          
+          .load-more-link {
+            display: inline-block;
+            margin-top: 26px;
+            margin-bottom: 30px;
+            font-size: 30px;
+            color: #d2322d;
+            text-transform: uppercase;
+          }
+          
+          .load-more-link:hover, .load-more-link:focus, .load-more-link:active {
+          	color: #ec7063;
+          }
+      	</style>
+    </head>
+    <body>
+      <script id="item-template" type="text/x-handlebars-template">
+        <div class="post-item category-{{type}}">
+          <div class="post-image-container">
+            <div class="hs-featured-image-wrapper">
+              <a class="hs-featured-image-link" href="{{url}}" title="{{ title }}"><span class="hs-featured-image" style="background-image:url('{{image}}')"></span></a>
+            </div>
+          </div>
+          <div class="post-body-container">
+            <div class="post-header">
+              <span><a class="post-item-topic-link topic-seq-1" href="{{topics.0/slug}}">{{ topics.0/name }}</a></span>
+              <h3><a href="{{url}}">{{ title }}</a></h3>
+             <a href="{{url}}" class="post-content-text">{{ shortBody }}</a>
+            </div>
+            <div class="post-author">
+              By <a class="author-link" href="/test-blog/author/{{author_slug}}">{{ author }}</a> {{ date }}
+            </div>
+          </div>
+        </div>
+      </script>
+      <div class="search-wrapper">
+        <div class="title-search-section">
+          <div class="search-container">
+            <i class="fas fa-search js-show-input"></i>
+            <div class="search-input">
+              <input type="search" class="js-input-search" placeholder="Type Here...">
+            </div>
+          </div>
+        </div>
+
+        <div class="search-result post-listing">
+          <div class="search-result-inner" style="display: none;">
+            <div class="search-result-list">
+            </div>
+            <p class="error-msg search-error" style="display: none">Sorry, we couldn't serve your request at this moment, please try again later.</p>
+            <p class="error-msg no-result" style="display: none">We couldn't find anything based on your keyword.</p>
+            <p class="error-msg no-keyword" style="display: none">Please enter a keyword.</p>
+            <a href="#" class="load-more-link" style="display: none">Load more</a>
+          </div>
+        </div>
+      </div>
+
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/algoliasearch/3.30.0/algoliasearch.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.12/handlebars.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/URI.js/1.19.1/URI.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js" integrity="sha256-zG8v+NWiZxmjNi+CvUYnZwKtHzFtdO8cAKUIdB8+U9I=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.6.0/iframeResizer.contentWindow.min.js"></script>
+      <script>
+      jQuery(document).ready(function() {
+
+        function emptyList() {
+          $( '.search-result-inner' ).hide();
+          $( '.search-result .search-result-list' ).empty();
+          $( '.load-more-link' ).hide();
+          $( '.search-loader' ).remove();
+        }
+
+        var uri = new URI();
+        var search = uri.search(true);
+        var clientKey = search.key;
+
+        if (!clientKey) {
+          // TODO: Show error
+          return;
+        }
+
+        var init = function(appId, apiKey, indexName, keyword) {
+
+          if (!keyword) {
+            emptyList();
+            return;
+          }
+
+          var client = algoliasearch(appId, apiKey);
+          var index = client.initIndex(indexName || 'DefaultIndex');
+          var curPage = 0;
+          var urlCache = {};
+          var loadMore = function() {
+            $(".load-more-link").hide();
+            index.search(keyword, {
+              page: curPage,
+              attributesToHighlight: [],
+              attributesToSnippet: [
+                'body:19'
+              ]
+            }, function(err, content) {
+              if (err) {
+                console.error(err);
+                $(".search-error").show();
+                return;
+              }
+
+              if (!content || !content.hits || !content.hits.length) {
+                $(".no-result").show();
+                return;
+              }
+              var template = Handlebars.compile($("#item-template").html());
+              $( '.search-loader' ).remove();
+              for (var i = 0; i < content.hits.length; i++) {
+                var hit = content.hits[i];
+                hit.date = moment(hit.updated).format("LL");
+                hit.shortBody = jQuery.trim(content.hits[i].body).substring(0, 200).trim(this);
+
+                if (urlCache[hit.url]) {
+                  continue;
+                }
+                urlCache[hit.url] = true;
+                $(template(hit)).appendTo(".search-result .search-result-list");
+              }
+
+              curPage++;
+              $(".no-result").remove();
+              if (curPage < content.nbPages) {
+                $(".load-more-link").show();
+              }
+            });
+          };
+
+          loadMore();
+
+          $(".load-more-link").click(function(e) {
+            e.preventDefault();
+            loadMore();
+          });
+
+        };
+
+        function getAlgolia(keyword) {
+
+          $( '<div class="search-loader"></div>' ).insertAfter(".search-result");
+          $.ajax({
+            url: "https://nqe2xb5qhe.execute-api.us-east-1.amazonaws.com/prod/0/search-settings/" + clientKey,
+            dataType: "json"
+          }).done(function(resp) {
+            init(resp.algoliaAppId, resp.algoliaSearchKey, resp.algoliaIndexName, keyword);
+
+            $( '.search-result-inner' ).show();
+          }).fail(function(xhr, status, e) {
+            // TODO: Handle error
+          });
+
+        }
+
+        var timeoutID = null;
+
+        $( '.js-input-search' ).on( 'change paste keyup', function( e ) {
+
+          if( e.ctrlKey && e.keyCode == 65 ){ return; }
+
+          if( e.which <= 90 && e.which >= 48 || e.keyCode === 8 ) {
+            var $this = $( this );
+
+            clearTimeout(timeoutID);
+
+            timeoutID = setTimeout( function() {
+              var keyword = $this.val();
+              emptyList();
+              getAlgolia( keyword );
+            }, 500);
+          }
+
+        });
+      });
+      </script>
+ 
+    </body>
+</html>
